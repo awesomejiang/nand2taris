@@ -1,0 +1,57 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/Memory.hdl
+
+/**
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load==1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid. Access to any address in 
+ * the range 0x4000-0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the 
+ * Screen and Keyboard chip specifications given in the book.
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+    //read
+    Or16(a = o, b = false, out = out);
+    //RAM16K(in = in, load = false, address = address[0..13], out = out);
+
+    //write
+
+    //write into ram
+    Not(in = address[14], out = selram);
+    Mux(a= false, b = load, sel = selram, out = loadram);
+    RAM16K(in = in, load = loadram, address = address[0..13], out = o1);
+
+    //write into screen
+    Xor(a = address[13], b = address[14], out = xor);
+    And(a = address[14], b = xor, out = selscrn);
+    Mux(a = false, b = load, sel = selscrn, out = loadscrn);
+    Screen(in = in, load = loadscrn, address = address[0..12], out = o2);
+
+    //write into keyboard
+    And(a = address[13], b = address[14], out = selkb);
+    Mux(a = false, b = load, sel = selkb, out = loadkb);
+    Keyboard(out = o3);
+
+   	Mux8Way16(b = o1, c = o2, e = o3, sel[0] = selram, sel[1] = selscrn, sel[2] = selkb, out = o);
+
+
+
+}

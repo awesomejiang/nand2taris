@@ -1,0 +1,36 @@
+There is only 1 important function in header file "whitespace.h", accompanying with 3 subfunctions.
+
+
+void stripWhiteSpace(string in_path, int comment)
+This is the main part of the algorithm. It deletes all blanks and comments(if appliable) in input file and builds the output file.
+Input:
+	Para1(string): Path of input file.
+	Para2(int): Comment mode parameter. Delete all comments if para2 is true.
+Return:
+	Return void, but create the outputfile when function is called.
+
+
+
+sub-rountines:
+1. string outPutPath(string in_path)
+Input:
+	Para1(string): Path of input file.
+Return:
+	Expected path of output file.
+	Throw error and exit the programme if the input file is invalid.
+
+
+2. string deleteComments(string str)
+Input:
+	Para1(string): original string.
+Return:
+	A string with comments deleted.
+
+
+3. void deleteBlank(int* flag, string& line, ofstream* out_file){
+Input:
+	Para1(int*): A dummy flag related to output '\n' or not.
+	Para2(string&): Input string.
+	Para2(ofstream*): Output file.
+Return:
+	Return void, but modify the target file when function is called.

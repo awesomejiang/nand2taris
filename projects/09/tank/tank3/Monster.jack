@@ -1,0 +1,113 @@
+/** Draw a pixels monster. */
+
+class Monster{
+	field int x, y, size; //the left up corner of target monster, monster size
+
+	/** Constructs a new monster in some place. */
+	constructor Monster new(){
+		let x = 217;
+		let y = 23;
+		let size = 20;
+
+		do createMonster();
+
+		return this;
+	}
+
+	/** Disposes method */
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Create a monster. */
+	method void createMonster(){
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x, y, (x+size), (y+size));
+
+		return;
+	}
+
+	/** Update a monster. */
+	method void updateMonster(){	//if monster is shooted, create a new one
+		//delete old monster
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x, y, (x+size), (y+size));
+
+		//generate a new one
+		//set "random" new mx and my
+		let x = (3*x)+23;
+		let y = (3*y)+54;
+		while( (x > (388-size)) ){
+			let x = (x - (388-size));
+		}
+		while( (y > (255-size)) ){
+			let y = (y - (255-size));
+		}
+
+		do createMonster();
+
+		return;
+	}
+
+
+	/** Make the monster move randomly. */
+	method void move(int d){
+		var int flag;
+		let flag = d/7;
+		while(flag > 99){
+			let flag = flag - 100;
+		}
+
+		if(flag = 0){
+			let d = (d+1000)/997;
+			while( d > 4 ){
+				let d = d - 4;
+			}
+			let d = d - 1;
+			do Screen.setColor(false);
+			if(d = 0){
+				if( y > 0 ){
+					do Screen.drawRectangle(x, y+size, x+size, y+size);
+					let y = y - 1;
+				}
+			}
+			if(d = 1){
+				if( x < (388-size) ){
+					do Screen.drawRectangle(x, y, x, y+size);
+					let x = x + 1;
+				}
+			}
+			if(d = 2){
+				if( y < (255-size) ){
+					do Screen.drawRectangle(x, y, x+size, y);
+					let y = y + 1;
+				}
+			}
+			if(d = 3){
+				if( x > 0 ){
+					do Screen.drawRectangle(x+size, y, x+size, y+size);
+					let x = x - 1;
+				}
+			}
+			do createMonster();
+		}
+		return;
+	}
+
+
+	/** return x */
+	method int x(){
+		return x;
+	}
+
+	/** return y */
+	method int y(){
+		return y;
+	}
+
+	/** return size */
+	method int size(){
+		return size;
+	}
+}

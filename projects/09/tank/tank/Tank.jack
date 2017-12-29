@@ -1,0 +1,265 @@
+/** Draw a pixels tank. */
+
+class Tank{
+	
+	field int x, y, tsize, gsize; //screen location of tank's center
+	field int speed;
+	field int new_direction, old_direction; //direction of tank 1 2 3 4->up right down left
+
+	field int mx, my, msize; //the left up corner of target monster, monster size
+
+	/** Constructs a new tank in the center of screen. */
+		constructor Tank new(){
+		let x = 127;
+		let y = 127;
+		let speed = 3;
+		let old_direction = 1;
+		let new_direction = 1;
+		do draw();
+
+		let mx = 321;
+		let my = 12;
+		let msize = 30;
+		do createMonster(1);
+
+		return this;
+	}
+
+
+	/** Disposes method */
+	method void dispose(){
+		do Memory.deAlloc(this);
+		return;
+	}
+
+
+	/** Draws tank in screen. */
+	method void draw(){
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x-5, y-5, x+5, y+5);
+
+		if(new_direction = 1){
+			do Screen.drawRectangle(x-2, y-12, x+2, y-6);
+		}
+		if(new_direction = 2){
+			do Screen.drawRectangle(x+6, y-2, x+12, y+2);
+		}
+		if(new_direction = 3){
+			do Screen.drawRectangle(x-2, y+6, x+2, y+12);
+		}
+		if(new_direction = 4){
+			do Screen.drawRectangle(x-12, y-2, x-6, y+2);
+		}
+		return;
+	}
+
+	/** refresh tank in screen. */
+	//2 steps to finish: erase old part and draw new part
+	method void update_gun(){
+		//delete trajectory
+		do shoot(0);
+
+		//delete old gun
+		do Screen.setColor(false);
+		if(old_direction = 1){
+			do Screen.drawRectangle(x-2, y-12, x+2, y-6);
+		}
+		if(old_direction = 2){
+			do Screen.drawRectangle(x+6, y-2, x+12, y+2);
+		}
+		if(old_direction = 3){
+			do Screen.drawRectangle(x-2, y+6, x+2, y+12);
+		}
+		if(old_direction = 4){
+			do Screen.drawRectangle(x-12, y-2, x-6, y+2);
+		}
+
+		//draw new gun
+		do Screen.setColor(true);
+		if(new_direction = 1){
+			do Screen.drawRectangle(x-2, y-12, x+2, y-6);
+		}
+		if(new_direction = 2){
+			do Screen.drawRectangle(x+6, y-2, x+12, y+2);
+		}
+		if(new_direction = 3){
+			do Screen.drawRectangle(x-2, y+6, x+2, y+12);
+		}
+		if(new_direction = 4){
+			do Screen.drawRectangle(x-12, y-2, x-6, y+2);
+		}		
+
+		return;
+	}
+
+
+	/** Moves the square up by (speed) pixel*/
+	method void moveUp(){
+		if(y > (11+speed)){
+			let new_direction = 1;
+			if(~(old_direction = new_direction)){
+				do update_gun();
+			}
+			let old_direction = 1;
+
+			do Screen.setColor(false);
+			do Screen.drawRectangle(x-5, y+5-speed, x+5, y+5);
+			let y = y - speed;
+			do draw();
+		}
+		return;
+	}
+
+
+	/** Moves the square right by 1 pixel*/
+	method void moveRight(){
+		if(x < (500-speed)){
+			let new_direction = 2;
+			if(~(old_direction = new_direction)){
+				do update_gun();
+			}
+			let old_direction = 2;
+
+			do Screen.setColor(false);
+			do Screen.drawRectangle(x-5, y-5, x-5+speed, y+5);
+			let x = x + speed;
+			do draw();
+		}
+		return;
+	}
+
+
+	/** Moves the square down by 1 pixel*/
+	method void moveDown(){
+		if(y < (244-speed)){
+			let new_direction = 3;
+			if(~(old_direction = new_direction)){
+				do update_gun();
+			}
+			let old_direction = 3;
+
+			do Screen.setColor(false);
+			do Screen.drawRectangle(x-5, y-5, x+5, y-5+speed);
+
+			let y = y + speed;
+			do draw();
+		}
+		return;
+	}
+
+
+	/** Moves the square up by 1 pixel*/
+	method void moveLeft(){
+		if(x > (11+speed)){
+			let new_direction = 4;
+			if(~(old_direction = new_direction)){
+				do update_gun();
+			}
+			let old_direction = 4;
+
+			do Screen.setColor(false);
+			do Screen.drawRectangle(x+5-speed, y-5, x+5, y+5);
+			let x = x - speed;
+			do draw();
+		}
+		return;
+	}
+
+
+	/** draw or clear trajectory*/
+	method void shoot(int space){
+		if(space = 1){
+			do Screen.setColor(true);
+		}
+		else{
+			do Screen.setColor(false);
+		}
+
+		if( (old_direction = 1) & (y > (11+speed)) ){
+			do Screen.drawRectangle(x, 0, x, y-13);
+		}
+		if( (old_direction = 2) & (x < (500-speed)) ){
+			do Screen.drawRectangle(x+13, y, 511, y);
+		}
+		if( (old_direction = 3) & (y < (244-speed)) ){
+			do Screen.drawRectangle(x, y+13, x, 255);
+		}
+		if( (old_direction = 4) & (x > (11+speed)) ){
+			do Screen.drawRectangle(0, y, x-13, y);
+		}
+		return;
+	}
+
+
+	/** change speed.*/
+	method void speed(int para){
+		if((para = 0) & (speed > 1) ){
+			let speed = speed - 1;
+		}
+
+		if((para = 1) & (speed < 5)){
+			let speed = speed + 1;
+		}
+		return;
+	}
+
+
+	/* Create a monster*/
+	method void createMonster(int para){	// a 5*5 square monster whose left up corner is at(x,y)
+		if(para = 1){
+			do Screen.setColor(true);
+		}
+		else{
+			do Screen.setColor(false);
+		}
+		do Screen.drawRectangle(mx, my, (mx+msize), (my+msize));
+		return;
+	}
+
+	/*Update a monster*/
+	method void updateMonster(){	//if monster is shooted, create a new one
+		var int flag;
+		let flag = 0;
+		if(old_direction = 1){
+			//flag = x>=mx & x<=mx+4 & y-12>my+4;
+			if( (x>(mx-1)) & (x<(mx+msize+1)) & (y>(my+12+msize)) ){
+				let flag = 1;
+			}
+		}
+		if(old_direction = 2){
+			//flag = y>=my & y<=my+4 & x+12<mx;
+			if( (y>(my-1)) & (y<(my+msize+1)) & (x<(mx-msize)) ){
+				let flag = 1;
+			}
+		}
+		if(old_direction = 3){
+			//flag = x>=mx & x<=mx+4 & y+12<my;
+			if( (x>(mx-1)) & (x<(mx+msize+1)) & (y<(my-msize)) ){
+				let flag = 1;
+			}
+		}
+		if(old_direction = 4){
+			//flag = y>=my & y<=my+4 & x-12>mx+4;
+			if( (y>(my-1)) & (y<(my+msize+1)) & (x>(mx+12+msize)) ){
+				let flag = 1;
+			}
+		}
+
+		if(flag = 1){
+			do createMonster(0);	//delete old monster
+
+			//set "random" new mx and my
+			let mx = 3*mx;
+			let my = 3*my;
+			while( (mx > (511-msize)) ){
+				let mx = (mx - (511-msize));
+			}
+			while( (my > (255-msize)) ){
+				let my = (my - (255-msize));
+			}
+
+			do createMonster(1);	//create a new one
+		}
+		return;
+	}
+}

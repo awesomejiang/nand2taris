@@ -1,0 +1,185 @@
+function TankGame.new 0
+push constant 1
+call Memory.alloc 1
+pop pointer 0
+call Tank.new 0
+pop this 0
+push pointer 0
+return
+function TankGame.dispose 0
+push argument 0
+pop pointer 0
+push this 0
+call Tank.dispose 1
+pop temp 0
+push constant 0
+return
+function TankGame.moveTank 0
+push argument 0
+pop pointer 0
+push argument 1
+push constant 32
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+push constant 1
+call Tank.shoot 2
+pop temp 0
+push this 0
+call Tank.updateMonster 1
+pop temp 0
+goto IF_END0
+label IF_FALSE0
+label IF_END0
+push argument 1
+push constant 131
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+call Tank.moveUp 1
+pop temp 0
+label IF_FALSE1
+push argument 1
+push constant 132
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push this 0
+call Tank.moveRight 1
+pop temp 0
+label IF_FALSE2
+push argument 1
+push constant 133
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push this 0
+call Tank.moveDown 1
+pop temp 0
+label IF_FALSE3
+push argument 1
+push constant 130
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push this 0
+call Tank.moveLeft 1
+pop temp 0
+label IF_FALSE4
+push constant 5
+call Sys.wait 1
+pop temp 0
+push constant 0
+return
+function TankGame.speedTank 0
+push argument 0
+pop pointer 0
+push argument 1
+push constant 90
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push this 0
+push constant 0
+call Tank.speed 2
+pop temp 0
+label IF_FALSE0
+push argument 1
+push constant 88
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 0
+push constant 1
+call Tank.speed 2
+pop temp 0
+label IF_FALSE1
+push constant 0
+return
+function TankGame.run 3
+push argument 0
+pop pointer 0
+push constant 0
+pop local 1
+push constant 0
+pop local 2
+label WHILE_EXP0
+push local 1
+not
+not
+if-goto WHILE_END0
+label WHILE_EXP1
+push local 0
+push constant 0
+eq
+not
+if-goto WHILE_END1
+push constant 0
+pop local 2
+call Keyboard.keyPressed 0
+pop local 0
+push pointer 0
+push local 0
+call TankGame.moveTank 2
+pop temp 0
+goto WHILE_EXP1
+label WHILE_END1
+push local 0
+push constant 81
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+not
+pop local 1
+label IF_FALSE0
+label WHILE_EXP2
+push local 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END2
+call Keyboard.keyPressed 0
+pop local 0
+push local 2
+push constant 0
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 1
+pop local 2
+push pointer 0
+push local 0
+call TankGame.speedTank 2
+pop temp 0
+label IF_FALSE1
+push pointer 0
+push local 0
+call TankGame.moveTank 2
+pop temp 0
+goto WHILE_EXP2
+label WHILE_END2
+push this 0
+push constant 0
+call Tank.shoot 2
+pop temp 0
+push this 0
+push constant 1
+call Tank.createMonster 2
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return

@@ -1,0 +1,192 @@
+/**
+* Implements the Tank Shooting game;
+* This simple game allows the user to move a tank, shoot target and gain points.
+* When game starts, a new tank will appear in the center of screen.
+* Target will appear in screen randomly and refresh when shooted.
+* Use 4 arrow keys to move tank up, down, left and right.
+* Use "space" key to shoot.
+* Use 'q' key to quit.
+*/
+
+class TankGame{
+	field Tank tank; // create a new tank object
+	field Monster monster; // create a new monster object
+	field int time; //running time.
+
+	/** Constructs a new Tank Game. */
+	constructor TankGame new(){
+		let tank = Tank.new();
+		let monster = Monster.new();
+		let time = 0;
+		return this;
+	}
+
+	/** Disposes this game. */
+	method void dispose(){
+		do tank.dispose();
+		do monster.dispose();
+		return;
+	}
+
+
+	/**Moves tank. */
+	method void singlePress(char key){
+		//update shoot and judge if monster is shooted.
+		if(key = 32){	//space
+			do tank.shoot(1);
+			do shooted();
+		}
+		else{
+			//do tank.shoot(0);
+		}
+
+		//Moves tank
+		if(key = 131){	//up arrow
+			do tank.moveUp();
+		}
+		if(key = 132){	//right arrow
+			do tank.moveRight();
+		}
+		if(key = 133){	//down arrow
+			do tank.moveDown();
+		}
+		if(key = 130){	//left arrow
+			do tank.moveLeft();
+		}
+
+		do monster.move(time);
+
+		if(time > 32000){
+			let time = 0;
+		}
+		else{
+			let time = time + 5;
+		}
+
+		do Sys.wait(5);
+		return;
+	}
+
+
+	/** Change the space of tank for only 1 during single press.*/
+	method void speedTank(char key){
+		if(key = 90){	//z
+			do tank.speed(0);
+		}
+		if(key = 88){	//x
+			do tank.speed(1);
+		}
+		return;
+	}
+
+
+	/** Print the end screen */
+	method void printend(){
+		do Screen.clearScreen();
+		do Output.printString("Game Over!");
+		return;
+	}
+
+
+
+
+
+
+
+	/** if monster is shooted, generate a new one. */
+	method void shooted(){
+		var int flag;
+		let flag = 0;
+		if(tank.old_direction() = 1){
+			//flag = x>=mx & x<=mx+ms & y-12>my+ms;
+			if( (tank.x()>(monster.x()-1)) & (tank.x()<(monster.x()+monster.size()+1)) & (tank.y()>(monster.y()+12+monster.size())) ){
+				let flag = 1;
+			}
+		}
+		if(tank.old_direction() = 2){
+			//flag = y>=my & y<=my+ms & x+12<mx;
+			if( (tank.y()>(monster.y()-1)) & (tank.y()<(monster.y()+monster.size()+1)) & (tank.x()<(monster.x()-12)) ){
+				let flag = 1;
+			}
+		}
+		if(tank.old_direction() = 3){
+			//flag = x>=mx & x<=mx+ms & y+12<my;
+			if( (tank.x()>(monster.x()-1)) & (tank.x()<(monster.x()+monster.size()+1)) & (tank.y()<(monster.y()-12)) ){
+				let flag = 1;
+			}
+		}
+		if(tank.old_direction() = 4){
+			//flag = y>=my & y<=my+ms & x-12>mx+ms;
+			if( (tank.y()>(monster.y()-1)) & (tank.y()<(monster.y()+monster.size()+1)) & (tank.x()>(monster.x()+12+monster.size())) ){
+				let flag = 1;
+			}
+		}
+
+		if(flag = 1){
+			do monster.updateMonster();
+		}
+		return;
+	}
+
+
+	/** if tank(body) is touched, game is end. */
+	method boolean touched(){
+		//flag = x>=mx & x<=mx+ms & y>=my & y<=my+ms;
+		if( (tank.x()>(monster.x()-1)) & (tank.x()<(monster.x()+monster.size()+1)) & (tank.y()>(monster.y()-1)) & (tank.y()<(monster.y()+monster.size()+1)) ){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+
+
+
+	/** Runs the game: handles the user's inputs and moves the tank accordingly. */
+	method void run(){
+		var char key;
+		var boolean exit;
+		var int loop;
+
+		let exit = false;
+		let loop = 0;
+
+
+		while(~exit){
+			//waits for a key
+			while(key = 0){
+				let loop = 0;
+				let key = Keyboard.keyPressed();
+				do singlePress(key);
+				if(~exit){
+					let exit = touched();
+				}
+			}
+
+			if(key = 81){
+				let exit = true;
+			}
+
+			//waits for the key to be released.
+			while(~(key = 0)){
+				let key = Keyboard.keyPressed();
+				if(loop = 0){
+					let loop = 1;
+					do speedTank(key);
+				}
+				do singlePress(key);
+				if(~exit){
+					let exit = touched();
+				}		
+			}
+
+			//after release
+			do tank.shoot(0);
+			do monster.createMonster();
+		}
+
+		do printend();
+		return;
+	}
+}

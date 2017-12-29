@@ -1,0 +1,12 @@
+/** Initializes a new Tank Shooting game and starts running it. */
+
+class Main{
+	function void main(){
+		var TankGame game;
+		let game = TankGame.new();
+		do game.run();
+		
+		do game.dispose();
+		return;
+	}
+}

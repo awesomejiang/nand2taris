@@ -1,0 +1,107 @@
+/**
+* Implements the Tank Shooting game;
+* This simple game allows the user to move a tank, shoot target and gain points.
+* When game starts, a new tank will appear in the center of screen.
+* Target will appear in screen randomly and refresh when shooted.
+* Use 4 arrow keys to move tank up, down, left and right.
+* Use "space" key to shoot.
+* Use 'q' key to quit.
+*/
+
+class TankGame{
+	field Tank tank; // create a new tank object
+
+	/** Constructs a new Tank Game. */
+	constructor TankGame new(){
+		let tank = Tank.new();
+		return this;
+	}
+
+	/** Disposes this game. */
+	method void dispose(){
+		do tank.dispose();
+		return;
+	}
+
+	/**Moves tank. */
+	method void moveTank(char key){
+		//update shoot and judge if monster is shooted.
+		if(key = 32){	//space
+			do tank.shoot(1);
+			do tank.updateMonster();
+		}
+		else{
+			//do tank.shoot(0);
+		}
+
+		//Moves tank
+		if(key = 131){	//up arrow
+			do tank.moveUp();
+		}
+		if(key = 132){	//right arrow
+			do tank.moveRight();
+		}
+		if(key = 133){	//down arrow
+			do tank.moveDown();
+		}
+		if(key = 130){	//left arrow
+			do tank.moveLeft();
+		}
+
+		do Sys.wait(5);
+		return;
+	}
+
+
+	/* Change the space of tank for only 1 during single press.*/
+	method void speedTank(char key){
+		if(key = 90){	//z
+			do tank.speed(0);
+		}
+		if(key = 88){	//x
+			do tank.speed(1);
+		}
+		return;
+	}
+
+
+
+	/** Runs the game: handles the user's inputs and moves the tank accordingly. */
+	method void run(){
+		var char key;
+		var boolean exit;
+		var int loop;
+
+		let exit = false;
+		let loop = 0;
+
+
+		while(~exit){
+			//waits for a key
+			while(key = 0){
+				let loop = 0;
+				let key = Keyboard.keyPressed();
+				do moveTank(key);
+			}
+
+			if(key = 81){
+				let exit = true;
+			}
+
+			//waits for the key to be released.
+			while(~(key = 0)){
+				let key = Keyboard.keyPressed();
+				if(loop = 0){
+					let loop = 1;
+					do speedTank(key);
+				}
+				do moveTank(key);			
+			}
+
+			//after release
+			do tank.shoot(0);
+			do tank.createMonster(1);
+		}
+		return;
+	}
+}
